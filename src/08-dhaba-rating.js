@@ -45,17 +45,67 @@
  *   // => [{ rating: 5 }, { rating: 3 }]
  */
 export function createFilter(field, operator, value) {
-  // Your code here
+  const operators = {
+    ">": (a, b) => a > b,
+    "<": (a, b) => a < b,
+    ">=": (a, b) => a >= b,
+    "<=": (a, b) => a <= b,
+    "===": (a, b) => a === b,
+  };
+
+  if (!operators[operator]) {
+    return () => false;
+  }
+
+  return function (obj) {
+    if (obj == null || typeof obj !== "object") return false;
+    return operators[operator](obj[field], value);
+  };
 }
 
 export function createSorter(field, order = "asc") {
-  // Your code here
+  return function (a, b) {
+    const valA = a?.[field];
+    const valB = b?.[field];
+
+    if (valA === valB) return 0;
+
+    if (order === "desc") {
+      return valA > valB ? -1 : 1;
+    }
+
+    return valA > valB ? 1 : -1;
+  };
 }
 
 export function createMapper(fields) {
-  // Your code here
+  if (!Array.isArray(fields)) {
+    return () => ({});
+  }
+
+  return function (obj) {
+    const result = {};
+
+    for (const field of fields) {
+      if (obj != null && field in obj) {
+        result[field] = obj[field];
+      }
+    }
+
+    return result;
+  };
 }
 
 export function applyOperations(data, ...operations) {
-  // Your code here
+  if (!Array.isArray(data)) return [];
+
+  let result = data;
+
+  for (const operation of operations) {
+    if (typeof operation === "function") {
+      result = operation(result);
+    }
+  }
+
+  return result;
 }

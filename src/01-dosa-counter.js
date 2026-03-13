@@ -33,4 +33,28 @@
  */
 export function calculateDosaOrder(type, quantity = 1, isSpicy = false) {
   // Your code here
+  if (
+    !type ||
+    typeof type !== "string" ||
+    typeof quantity !== "number" ||
+    quantity <= 0
+  ) {
+    return null;
+  }
+  let price = 0;
+  const menu = {
+    plain: 40,
+    masala: 60,
+    onion: 50,
+    butter: 70,
+    paper: 90,
+    cheese: 80,
+  };
+  price = menu[type];
+  if (price === undefined) {
+    return null;
+  }
+  isSpicy ? (price += 10) : (price += 0);
+  const total = price * quantity;
+  return { type, quantity, pricePerDosa: price, total };
 }
